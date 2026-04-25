@@ -14,52 +14,140 @@ window.onload = function () {
 document.addEventListener("DOMContentLoaded", function () {
     const roleElement = document.getElementById("typing-role");
 
-    if (!roleElement) {
-        return;
+    if (roleElement) {
+        const roles = ["Competitive Programmer", "Frontend Developer", "Problem Solver"];
+        const typingSpeed = 90;
+        const deletingSpeed = 55;
+        const holdDelay = 1200;
+        const switchDelay = 300;
+
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function typeLoop() {
+            const currentRole = roles[roleIndex];
+
+            if (isDeleting) {
+                charIndex--;
+            } else {
+                charIndex++;
+            }
+
+            roleElement.textContent = currentRole.slice(0, charIndex);
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                isDeleting = true;
+                setTimeout(typeLoop, holdDelay);
+                return;
+            }
+
+            if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                setTimeout(typeLoop, switchDelay);
+                return;
+            }
+
+            setTimeout(typeLoop, isDeleting ? deletingSpeed : typingSpeed);
+        }
+
+        typeLoop();
     }
-
-    const roles = ["Competitive Programmer", "Frontend Developer", "Problem Solver"];
-    const typingSpeed = 90;
-    const deletingSpeed = 55;
-    const holdDelay = 1200;
-    const switchDelay = 300;
-
-    let roleIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-
-    function typeLoop() {
-        const currentRole = roles[roleIndex];
-
-        if (isDeleting) {
-            charIndex--;
-        } else {
-            charIndex++;
-        }
-
-        roleElement.textContent = currentRole.slice(0, charIndex);
-
-        if (!isDeleting && charIndex === currentRole.length) {
-            isDeleting = true;
-            setTimeout(typeLoop, holdDelay);
-            return;
-        }
-
-        if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            roleIndex = (roleIndex + 1) % roles.length;
-            setTimeout(typeLoop, switchDelay);
-            return;
-        }
-
-        setTimeout(typeLoop, isDeleting ? deletingSpeed : typingSpeed);
-    }
-
-    typeLoop();
 
     setupRevealAnimations();
     setupActiveNavHighlight();
+    setupRatingCountAnimation();
 });
+
+function setupRatingCountAnimation() {
+    const ratingNodes = Array.from(document.querySelectorAll("#stats .stat-card h1"));
+
+    if (!ratingNodes.length) {
+        return;
+    }
+
+    const ratingItems = ratingNodes
+        .map(function (node) {
+            const target = Number(node.textContent.replace(/[^0-9]/g, ""));
+
+            if (!Number.isFinite(target) || target <= 0) {
+                return null;
+            }
+
+            return { node: node, target: target };
+        })
+        .filter(Boolean);
+
+    if (!ratingItems.length) {
+        return;
+    }
+
+    ratingItems.forEach(function (item) {
+        item.node.textContent = "0";
+    });
+
+    function animateRating(node, target, duration, delay) {
+        setTimeout(function () {
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const value = Math.floor(target * eased);
+
+                node.textContent = String(value);
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    node.textContent = String(target);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }, delay);
+    }
+
+    let hasStarted = false;
+
+    function startRatings() {
+        if (hasStarted) {
+            return;
+        }
+
+        hasStarted = true;
+
+        ratingItems.forEach(function (item, index) {
+            animateRating(item.node, item.target, 1300 + index * 110, index * 140);
+        });
+    }
+
+    const statsSection = document.getElementById("stats");
+
+    if (!statsSection || !("IntersectionObserver" in window)) {
+        startRatings();
+        return;
+    }
+
+    const statsObserver = new IntersectionObserver(
+        function (entries, observer) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    startRatings();
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.32,
+            rootMargin: "0px 0px -10% 0px"
+        }
+    );
+
+    statsObserver.observe(statsSection);
+}
 
 function setupRevealAnimations() {
     const revealTargets = document.querySelectorAll(

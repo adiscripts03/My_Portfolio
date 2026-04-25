@@ -139,7 +139,7 @@ nav {
 
 section {
     position: relative;
-    width: min(1120px, calc(100% - 2.8rem));
+    width: min(1320px, calc(100% - 2rem));
     margin: 0 auto;
     padding: clamp(4.8rem, 9vw, 7.3rem) 0;
 }
@@ -293,7 +293,7 @@ section::before {
 .achievements-container,
 .contact-container {
     display: grid;
-    gap: 20px;
+    gap: clamp(20px, 2vw, 30px);
 }
 
 .stats-container {
@@ -343,7 +343,7 @@ section::before {
 
 .stat-card {
     text-align: center;
-    padding: 1.6rem 1.2rem;
+    padding: 1.95rem 1.55rem;
 }
 
 .stat-card h3 {
@@ -391,8 +391,9 @@ section::before {
 
 .project-card {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    max-width: 1040px;
+    grid-template-columns: clamp(260px, 24vw, 340px) minmax(0, 1fr);
+    width: 100%;
+    max-width: none;
     margin: 0 auto;
     overflow: hidden;
 }
@@ -415,7 +416,7 @@ section::before {
 }
 
 .project-content {
-    padding: clamp(0.8rem, 1.35vw, 1rem);
+    padding: clamp(1rem, 1.75vw, 1.3rem);
 }
 
 .project-content h2 {
@@ -461,7 +462,7 @@ section::before {
 
 .skills-card {
     text-align: left;
-    padding: 1.35rem;
+    padding: 1.55rem;
 }
 
 .skills-card h2 {
@@ -489,7 +490,7 @@ section::before {
 }
 
 .achievement-card {
-    padding: 1.45rem 1.2rem;
+    padding: 1.75rem 1.4rem;
     text-align: center;
 }
 
@@ -507,8 +508,8 @@ section::before {
     display: grid;
     grid-template-columns: 88px minmax(0, 1fr);
     align-items: center;
-    gap: 18px;
-    padding: 1.35rem;
+    gap: 22px;
+    padding: 1.6rem;
     margin-bottom: 18px;
 }
 
@@ -550,8 +551,8 @@ section::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 64px;
-    padding: 0 14px;
+    min-height: 78px;
+    padding: 0 18px;
     text-decoration: none;
     font-weight: 700;
     color: #d9fff7;
